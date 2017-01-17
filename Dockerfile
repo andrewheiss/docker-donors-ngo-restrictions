@@ -3,10 +3,22 @@ LABEL maintainer="Andrew Heiss <andrew@andrewheiss.com>"
 
 # Install other important libraries
 # Cairo needs libxt-dev first
+# s3mpi needs python and pip first for s3cmd; also needs XML and pryr
 RUN apt-get -y --no-install-recommends install \
     libxt-dev \
+    python-pip \
+    && pip install s3cmd \
     && install2.r --error \
-        Cairo pander countrycode WDI
+        Cairo pander countrycode WDI XML pryr \
+    && R -e "library(devtools); \
+        install_github('avantcredit/AWS.tools'); \
+        install_github('kirillseva/cacher'); \
+        install_github('robertzk/s3mpi')"
+
+# Move empty s3 configuration file to rstudio's home directory
+# NOTE: This will need to be hand-edited and renamed with a . prefix
+COPY cfg/s3cfg /home/rstudio/s3cfg \
+    && chown rstudio:rstudio s3cfg
 
 # ---------------
 # Install fonts
