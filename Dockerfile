@@ -18,7 +18,7 @@ RUN apt-get -y --no-install-recommends install \
 # Move empty s3 configuration file to rstudio's home directory
 # NOTE: This will need to be hand-edited and renamed with a . prefix
 COPY cfg/s3cfg /home/rstudio/s3cfg \
-    && chown rstudio:rstudio s3cfg
+    && chown rstudio:rstudio /home/rstudio/s3cfg
 
 # ---------------
 # Install fonts
