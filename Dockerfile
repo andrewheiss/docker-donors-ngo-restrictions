@@ -27,4 +27,6 @@ RUN . $HOME/fonts/install_open_sans.sh
 # ---------------------------
 # Get project code and data
 # ---------------------------
-RUN git clone https://github.com/andrewheiss/donors-ngo-restrictions.git
+RUN cd /home/rstudio \
+    && git clone https://github.com/andrewheiss/donors-ngo-restrictions.git \
+    && chown -R rstudio:rstudio donors-ngo-restrictions
