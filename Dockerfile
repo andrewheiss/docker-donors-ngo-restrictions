@@ -9,7 +9,7 @@ RUN apt-get -y --no-install-recommends install \
     python-pip \
     && pip install s3cmd \
     && install2.r --error \
-        Cairo pander countrycode WDI XML pryr \
+        Cairo pander countrycode WDI XML pryr stargazer \
     && R -e "library(devtools); \
         install_github('avantcredit/AWS.tools'); \
         install_github('kirillseva/cacher'); \
