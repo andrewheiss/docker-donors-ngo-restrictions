@@ -4,12 +4,15 @@ LABEL maintainer="Andrew Heiss <andrew@andrewheiss.com>"
 # Install other important libraries
 # Cairo needs libxt-dev first
 # s3mpi needs python and pip first for s3cmd; also needs XML and pryr
+# Amelia needs RcppArmadillo
 RUN apt-get -y --no-install-recommends install \
     libxt-dev \
     python-pip \
     && pip install s3cmd \
     && install2.r --error \
-        Cairo pander countrycode WDI XML pryr stargazer \
+        Cairo pander stargazer countrycode WDI \
+        XML pryr \
+        RcppArmadillo Amelia \
     && R -e "library(devtools); \
         install_github('avantcredit/AWS.tools'); \
         install_github('kirillseva/cacher'); \
