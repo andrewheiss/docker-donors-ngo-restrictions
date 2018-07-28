@@ -1,31 +1,42 @@
-FROM andrewheiss/tidyverse-rstanarm
-LABEL maintainer="Andrew Heiss <andrew@andrewheiss.com>"
+FROM rocker/tidyverse:3.5.1
+MAINTAINER Andrew Heiss andrewheiss@gmail.com
 
-# Install other important libraries
-# Cairo needs libxt-dev first
-# s3mpi needs python and pip first for s3cmd; also needs XML and pryr
-# Amelia needs RcppArmadillo
-RUN apt-get -y --no-install-recommends install \
-    libxt-dev \
-    python-pip \
-    && pip install s3cmd \
-    && install2.r --error \
-        Cairo pander stargazer countrycode WDI \
-        XML pryr \
-        RcppArmadillo Amelia \
+# Install ed, since nloptr needs it to compile
+# Install clang and ccache to speed up Stan installation
+# Install libxt-dev for Cairo 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       apt-utils \
+       ed \
+       libnlopt-dev \
+       clang \
+       ccache \
+       libxt-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/
+
+# Add Makevars for Stan
+RUN mkdir -p $HOME/.R/ \
+    && echo "CXX = /usr/bin/ccache clang++ -Qunused-arguments -fcolor-diagnostics \nCXXFLAGS = -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g -pedantic -g0 \n" \ >> $HOME/.R/Makevars
+
+# Install Stan, rstanarm, and friends
+RUN install2.r --error --deps TRUE \
+        rstan loo bayesplot rstanarm rstantools shinystan ggmcmc \
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+
+# Install project-specific packages
+# Also, reinstall ggplot2 using a more recent snapshot, since ggplot2 3.0 
+# was released after the R 3.5.1 MRAN snapshot was generated
+RUN install2.r --error --deps TRUE \
+        Amelia countrycode cshapes DT future furrr ggstance here \
+        huxtable imputeTS lme4 OECD pander stargazer validate WDI \
     && R -e "library(devtools); \
-        install_github('avantcredit/AWS.tools'); \
-        install_github('kirillseva/cacher'); \
-        install_github('robertzk/s3mpi')"
+        install.packages('ggplot2', repos = 'https://mran.revolutionanalytics.com/snapshot/2018-07-27/'); \
+        install_github('bbolker/broom.mixed'); \
+        install_github('thomasp85/patchwork');" \
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
-# Move empty s3 configuration file to rstudio's home directory
-# NOTE: This will need to be hand-edited and renamed with a . prefix
-COPY cfg/s3cfg /home/rstudio/s3cfg
-RUN chown rstudio:rstudio /home/rstudio/s3cfg
-
-# ---------------
 # Install fonts
-# ---------------
 # Place to put fonts
 RUN mkdir -p $HOME/fonts
 
@@ -38,10 +49,3 @@ RUN mkdir -p /tmp/OpenSans
 COPY scripts/install_open_sans.sh /root/fonts/install_open_sans.sh
 COPY fonts/Open_Sans.zip /tmp/OpenSans/Open_Sans.zip
 RUN . $HOME/fonts/install_open_sans.sh
-
-# ---------------------------
-# Get project code and data
-# ---------------------------
-RUN cd /home/rstudio \
-    && git clone https://github.com/andrewheiss/donors-ngo-restrictions.git \
-    && chown -R rstudio:rstudio donors-ngo-restrictions
