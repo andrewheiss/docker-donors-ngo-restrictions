@@ -17,7 +17,7 @@ RUN apt-get update \
 
 # Add Makevars for Stan
 RUN mkdir -p $HOME/.R/ \
-    && echo "CXX = /usr/bin/ccache clang++ -Qunused-arguments -fcolor-diagnostics \nCXXFLAGS = -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g -pedantic -g0 \n" \ >> $HOME/.R/Makevars
+    && echo "CXX = /usr/bin/ccache clang++ -Qunused-arguments -fcolor-diagnostics \nCXXFLAGS = -g -O3 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g -pedantic -g0 \n" \ >> $HOME/.R/Makevars
 
 # Install Stan, rstanarm, and friends
 RUN install2.r --error --deps TRUE \
