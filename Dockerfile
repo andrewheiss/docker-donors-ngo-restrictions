@@ -21,7 +21,7 @@ RUN mkdir -p $HOME/.R/ \
 
 # Install Stan, rstanarm, and friends
 RUN install2.r --error --deps TRUE \
-        rstan loo bayesplot rstanarm rstantools shinystan ggmcmc \
+        rstan loo bayesplot rstanarm rstantools shinystan tidybayes brms ggmcmc \
     && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
 # Install project-specific packages
