@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-FONT_NAME="OpenSans"
+FONT_NAME="Open_Sans"
 
 cd /tmp/${FONT_NAME}
 unzip -o -j ${FONT_NAME}.zip
