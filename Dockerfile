@@ -47,17 +47,3 @@ RUN install2.r --error --deps TRUE \
         install_github('bbolker/broom.mixed'); \
         install_github('thomasp85/patchwork');" \
     && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
-
-# Install fonts
-# Place to put fonts
-RUN mkdir -p $HOME/fonts
-
-# Source Sans Pro
-COPY scripts/install_source_sans.sh /root/fonts/install_source_sans.sh
-RUN . $HOME/fonts/install_source_sans.sh
-
-# Open Sans
-RUN mkdir -p /tmp/OpenSans
-COPY scripts/install_open_sans.sh /root/fonts/install_open_sans.sh
-COPY fonts/Open_Sans.zip /tmp/OpenSans/Open_Sans.zip
-RUN . $HOME/fonts/install_open_sans.sh
